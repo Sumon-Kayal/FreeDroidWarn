@@ -18,75 +18,66 @@ import com.google.android.material.snackbar.Snackbar;
 
 public class FreeDroidWarn {
 
-    public static void showWarningDialogOnUpgrade(Context context, int buildVersion){
-        // Load the preferences using standard context method (Replacement for deprecated PreferenceManager)
-        SharedPreferences prefManager = context.getSharedPreferences(context.getPackageName() + "_preferences", Context.MODE_PRIVATE);
-        int versionCode = prefManager.getInt("versionCodeWarn",0);
+    private static final String PREF_NAME = "_preferences";
+    private static final String KEY_VERSION = "versionCodeWarn";
 
-        // If the current version of the app is newer then the stored value show the dialog
+    public static void showWarningDialogOnUpgrade(Context context, int buildVersion){
+        SharedPreferences prefManager = context.getSharedPreferences(context.getPackageName() + PREF_NAME, Context.MODE_PRIVATE);
+        int versionCode = prefManager.getInt(KEY_VERSION, 0);
+
         if (buildVersion > versionCode){
             MaterialAlertDialogBuilder materialAlertDialogBuilder = new MaterialAlertDialogBuilder(context);
             materialAlertDialogBuilder.setMessage(R.string.dialog_Warning);
-            // Show a button for more details
-            materialAlertDialogBuilder.setNegativeButton(context.getString(R.string.dialog_more_info), (dialog, which) -> context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://keepandroidopen.org"))));
-            // Show a button closing the dialog => If pressed update the stored version
+            
+            materialAlertDialogBuilder.setNegativeButton(context.getString(R.string.dialog_more_info), (dialog, which) -> 
+                context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://keepandroidopen.org"))));
+            
             materialAlertDialogBuilder.setPositiveButton(context.getString(android.R.string.ok), (dialog, which) -> {
                 SharedPreferences.Editor editor = prefManager.edit();
-                editor.putInt("versionCodeWarn", buildVersion);
+                editor.putInt(KEY_VERSION, buildVersion);
                 editor.apply();
             });
 
-            // Show a button for possible solutions
-            materialAlertDialogBuilder.setNeutralButton(context.getString(R.string.solution), (dialog, which) -> context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/woheller69/FreeDroidWarn?tab=readme-ov-file#solutions"))));
+            materialAlertDialogBuilder.setNeutralButton(context.getString(R.string.solution), (dialog, which) -> 
+                context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/woheller69/FreeDroidWarn?tab=readme-ov-file#solutions"))));
 
-            // Display the dialog
             AlertDialog alertDialog = materialAlertDialogBuilder.create();
             alertDialog.show();
 
-            // Highlight the solution button
+            // Highlight the solution button using colorError
             Button neutralButton = alertDialog.getButton(DialogInterface.BUTTON_NEUTRAL);
             if (neutralButton != null) {
                 TypedValue tv = new TypedValue();
-                context.getTheme().resolveAttribute(com.google.android.material.R.attr.colorErrorContainer, tv, true);
-                int color = tv.resourceId != 0
-                        ? ContextCompat.getColor(context, tv.resourceId)
-                        : tv.data;
-
-                neutralButton.setTextColor(color);
+                if (context.getTheme().resolveAttribute(com.google.android.material.R.attr.colorError, tv, true)) {
+                    neutralButton.setTextColor(tv.resourceId != 0 ? ContextCompat.getColor(context, tv.resourceId) : tv.data);
+                }
             }
         }
-
     }
 
     public static void showWarningSnackBarOnUpgrade(Context context, View view, int buildVersion){
-        // Load the preferences using standard context method (Replacement for deprecated PreferenceManager)
-        SharedPreferences prefManager = context.getSharedPreferences(context.getPackageName() + "_preferences", Context.MODE_PRIVATE);
-        int versionCode = prefManager.getInt("versionCodeWarn",0);
+        SharedPreferences prefManager = context.getSharedPreferences(context.getPackageName() + PREF_NAME, Context.MODE_PRIVATE);
+        int versionCode = prefManager.getInt(KEY_VERSION, 0);
 
-        // If the current version of the app is newer then the stored value show the SnackBar
         if (buildVersion > versionCode){
-            // Create the SnackBar
             Snackbar snackbar = Snackbar.make(view, R.string.dialog_Warning, Snackbar.LENGTH_INDEFINITE);
             View snackbarView = snackbar.getView();
 
-            // Configure the TextView
             TextView textView = snackbarView.findViewById(com.google.android.material.R.id.snackbar_text);
-            textView.setMaxLines(Integer.MAX_VALUE);
-            textView.setSingleLine(false);
+            if (textView != null) {
+                textView.setMaxLines(10); // Avoid Integer.MAX_VALUE for better performance
+                textView.setSingleLine(false);
+            }
 
-            // Show a button for more details => If pressed update the stored version
             snackbar.setAction(R.string.dialog_more_info, v -> {
                 context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://keepandroidopen.org")));
                 SharedPreferences.Editor editor = prefManager.edit();
-                editor.putInt("versionCodeWarn", buildVersion);
+                editor.putInt(KEY_VERSION, buildVersion);
                 editor.apply();
             });
 
-            // Display the SnackBar for 5 seconds
             snackbar.setDuration(5000);
             snackbar.show();
         }
-
     }
-
-                                           }
+}
