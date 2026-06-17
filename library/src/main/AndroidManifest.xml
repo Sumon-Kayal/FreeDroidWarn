@@ -1,8 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- The 'package' attribute is now removed to follow AGP 9.1+ requirements -->
-    
-    <application>
-        <!-- Add your activities/services here if any were present -->
-    </application>
+    <!-- The 'package' attribute is removed to follow AGP 9.1+ requirements.
+         The namespace is declared in library/build.gradle instead. -->
 </manifest>
