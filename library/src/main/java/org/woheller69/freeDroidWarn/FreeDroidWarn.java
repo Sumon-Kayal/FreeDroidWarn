@@ -89,7 +89,7 @@ public class FreeDroidWarn {
         int versionCode = prefManager.getInt(KEY_VERSION, 0);
 
         if (buildVersion > versionCode) {
-            Snackbar snackbar = Snackbar.make(view, R.string.dialog_Warning, Snackbar.LENGTH_INDEFINITE);
+            Snackbar snackbar = Snackbar.make(view, R.string.dialog_Warning, 8000);
             View snackbarView = snackbar.getView();
 
             TextView textView = snackbarView.findViewById(com.google.android.material.R.id.snackbar_text);
@@ -105,7 +105,6 @@ public class FreeDroidWarn {
                 editor.apply();
             });
 
-            snackbar.setDuration(8000); // 8 seconds to ensure the user has time to read
             snackbar.show();
         }
     }
