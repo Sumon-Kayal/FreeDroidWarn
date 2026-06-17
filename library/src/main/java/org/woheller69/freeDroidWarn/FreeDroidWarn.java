@@ -105,6 +105,17 @@ public class FreeDroidWarn {
                 editor.apply();
             });
 
+            // Save the version on timeout or swipe-dismiss too, so the snackbar
+            // doesn't reappear every launch for users who saw it but didn't tap the action.
+            snackbar.addCallback(new Snackbar.Callback() {
+                @Override
+                public void onDismissed(Snackbar snackbar, int event) {
+                    if (event != DISMISS_EVENT_ACTION) {
+                        prefManager.edit().putInt(KEY_VERSION, buildVersion).apply();
+                    }
+                }
+            });
+
             snackbar.show();
         }
     }
