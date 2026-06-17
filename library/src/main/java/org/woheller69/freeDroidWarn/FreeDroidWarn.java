@@ -3,12 +3,9 @@ package org.woheller69.freeDroidWarn;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-
 import android.content.SharedPreferences;
 import android.net.Uri;
-import android.preference.PreferenceManager;
 import android.util.TypedValue;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -22,8 +19,8 @@ import com.google.android.material.snackbar.Snackbar;
 public class FreeDroidWarn {
 
     public static void showWarningDialogOnUpgrade(Context context, int buildVersion){
-        // Load the preferences
-        SharedPreferences prefManager = PreferenceManager.getDefaultSharedPreferences(context);
+        // Load the preferences using standard context method (Replacement for deprecated PreferenceManager)
+        SharedPreferences prefManager = context.getSharedPreferences(context.getPackageName() + "_preferences", Context.MODE_PRIVATE);
         int versionCode = prefManager.getInt("versionCodeWarn",0);
 
         // If the current version of the app is newer then the stored value show the dialog
@@ -62,8 +59,8 @@ public class FreeDroidWarn {
     }
 
     public static void showWarningSnackBarOnUpgrade(Context context, View view, int buildVersion){
-        // Load the preferences
-        SharedPreferences prefManager = PreferenceManager.getDefaultSharedPreferences(context);
+        // Load the preferences using standard context method (Replacement for deprecated PreferenceManager)
+        SharedPreferences prefManager = context.getSharedPreferences(context.getPackageName() + "_preferences", Context.MODE_PRIVATE);
         int versionCode = prefManager.getInt("versionCodeWarn",0);
 
         // If the current version of the app is newer then the stored value show the SnackBar
@@ -92,4 +89,4 @@ public class FreeDroidWarn {
 
     }
 
-}
+                                           }
