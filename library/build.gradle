@@ -2,11 +2,11 @@ apply plugin: 'com.android.library'
 
 android {
     namespace "org.woheller69.freeDroidWarn"
-    compileSdk 35 // Optimized for 35; check if 36 is fully stable in your SDK manager
+    compileSdk 36 
 
     defaultConfig {
         minSdk 21
-        targetSdk 35
+        targetSdk 36
         versionCode 17
         versionName "1.7"
     }
