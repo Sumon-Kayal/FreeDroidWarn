@@ -18,7 +18,7 @@ import com.google.android.material.snackbar.Snackbar;
 
 public class FreeDroidWarn {
 
-    private static final String PREF_NAME = "_preferences";
+    private static final String PREF_NAME = "dedicated_preferences";
     private static final String KEY_VERSION = "versionCodeWarn";
 
     /**
@@ -52,8 +52,11 @@ public class FreeDroidWarn {
             MaterialAlertDialogBuilder materialAlertDialogBuilder = new MaterialAlertDialogBuilder(context);
             materialAlertDialogBuilder.setMessage(R.string.dialog_Warning);
             
-            materialAlertDialogBuilder.setNegativeButton(context.getString(R.string.dialog_more_info), (dialog, which) -> 
-                context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://keepandroidopen.org"))));
+            materialAlertDialogBuilder.setNegativeButton(context.getString(R.string.dialog_more_info), (dialog, which) -> {
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://keepandroidopen.org"));
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(intent);
+            });
             
             materialAlertDialogBuilder.setPositiveButton(context.getString(android.R.string.ok), (dialog, which) -> {
                 SharedPreferences.Editor editor = prefManager.edit();
@@ -61,8 +64,11 @@ public class FreeDroidWarn {
                 editor.apply();
             });
 
-            materialAlertDialogBuilder.setNeutralButton(context.getString(R.string.solution), (dialog, which) -> 
-                context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/woheller69/FreeDroidWarn?tab=readme-ov-file#solutions"))));
+            materialAlertDialogBuilder.setNeutralButton(context.getString(R.string.solution), (dialog, which) -> {
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/woheller69/FreeDroidWarn?tab=readme-ov-file#solutions"));
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(intent);
+            });
 
             AlertDialog alertDialog = materialAlertDialogBuilder.create();
             alertDialog.show();
@@ -99,7 +105,9 @@ public class FreeDroidWarn {
             }
 
             snackbar.setAction(R.string.dialog_more_info, v -> {
-                context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://keepandroidopen.org")));
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://keepandroidopen.org"));
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(intent);
                 SharedPreferences.Editor editor = prefManager.edit();
                 editor.putInt(KEY_VERSION, buildVersion);
                 editor.apply();
