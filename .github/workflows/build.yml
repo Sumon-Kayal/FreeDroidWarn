@@ -5,15 +5,15 @@ on:
     branches: [ "main", "master" ]
   pull_request:
     branches: [ "main", "master" ]
- 
+
 permissions:
-   contents: read
- 
- concurrency:
-   group: ${{ github.workflow }}-${{ github.ref }}
-   cancel-in-progress: true
- 
- jobs:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
   build:
     name: Build Library AAR
     runs-on: ubuntu-latest
@@ -21,8 +21,8 @@ permissions:
     steps:
       - name: Checkout repository
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
-         with:
-           persist-credentials: false
+        with:
+          persist-credentials: false
 
       # AGP 9.1.1 requires JDK 17+.
       # Temurin 17 is the OpenJDK distribution used by the Android team
