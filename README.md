@@ -6,7 +6,7 @@
 - [Solutions](#solutions)
   - [Set up ADB on your device](#set-up-adb-on-your-device)
     - [Download ADB for PC (Windows)](#download-adb-for-pc-windows)
-    - [Download ADB for PC (Ubuntu / Debian)](#download-adb-for-pc-ubuntudebian)
+    - [Download ADB for PC (Ubuntu / Debian)](#download-adb-for-pc-ubuntu--debian)
     - [Download ADB for PC (Arch Linux / Manjaro)](#download-adb-for-pc-arch-linux--manjaro)
     - [Download app APK](#download-app-apk)
     - [Connect phone to USB and install app](#connect-phone-to-usb-and-install-app)
