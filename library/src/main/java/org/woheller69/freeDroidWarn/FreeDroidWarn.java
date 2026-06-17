@@ -1,5 +1,6 @@
 package org.woheller69.freeDroidWarn;
 
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -53,9 +54,7 @@ public class FreeDroidWarn {
             materialAlertDialogBuilder.setMessage(R.string.dialog_Warning);
             
             materialAlertDialogBuilder.setNegativeButton(context.getString(R.string.dialog_more_info), (dialog, which) -> {
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://keepandroidopen.org"));
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                context.startActivity(intent);
+                safeStartActivity(context, "https://keepandroidopen.org");
             });
             
             materialAlertDialogBuilder.setPositiveButton(context.getString(android.R.string.ok), (dialog, which) -> {
@@ -65,9 +64,7 @@ public class FreeDroidWarn {
             });
 
             materialAlertDialogBuilder.setNeutralButton(context.getString(R.string.solution), (dialog, which) -> {
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/woheller69/FreeDroidWarn?tab=readme-ov-file#solutions"));
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                context.startActivity(intent);
+                safeStartActivity(context, "https://github.com/woheller69/FreeDroidWarn?tab=readme-ov-file#solutions");
             });
 
             AlertDialog alertDialog = materialAlertDialogBuilder.create();
@@ -105,9 +102,7 @@ public class FreeDroidWarn {
             }
 
             snackbar.setAction(R.string.dialog_more_info, v -> {
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://keepandroidopen.org"));
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                context.startActivity(intent);
+                safeStartActivity(context, "https://keepandroidopen.org");
                 SharedPreferences.Editor editor = prefManager.edit();
                 editor.putInt(KEY_VERSION, buildVersion);
                 editor.apply();
@@ -130,5 +125,21 @@ public class FreeDroidWarn {
 
     private static SharedPreferences getPrefs(Context context) {
         return context.getSharedPreferences(context.getPackageName() + PREF_NAME, Context.MODE_PRIVATE);
+    }
+
+    /**
+     * Safely starts an ACTION_VIEW intent, handling ActivityNotFoundException
+     * @param context The context to start the activity from
+     * @param url The URL to open
+     */
+    private static void safeStartActivity(Context context, String url) {
+        try {
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(intent);
+        } catch (ActivityNotFoundException e) {
+            // No browser or app available to handle the intent
+            // Silently fail to avoid crashing the app
+        }
     }
 }
