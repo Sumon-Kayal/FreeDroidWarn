@@ -115,6 +115,9 @@ Log out and back in for the group change to take effect.
 
 > **AUR alternative:** If you prefer the latest upstream platform tools, you can install via the AUR:
 >
+> ```bash
+> yay -S android-platform-tools
+> ```
 >
 
 #### Download app APK
