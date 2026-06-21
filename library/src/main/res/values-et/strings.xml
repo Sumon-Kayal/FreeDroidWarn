@@ -1,5 +1,5 @@
 <resources>
-    <string name="dialog_Warning">Google on teatanud, et alates 2026/2027 nõuavad kõik sertifitseeritud Androidi seadmete rakendused arendajalt isikliku identiteedi andmete otsest esitamist Google'ile. Kuna selle rakenduse arendajad ei nõustu selle nõudega, ei tööta rakendus pärast seda aega enam sertifitseeritud Androidi seadmetes.</string>
+    <string name="dialog_Warning">Google on teatanud, et alates 2026/2027 nõuavad kõik sertifitseeritud Androidi seadmete rakendused arendajalt isikliku identiteedi andmete otsest esitamist Google\'ile. Kuna selle rakenduse arendajad ei nõustu selle nõudega, ei tööta rakendus pärast seda aega enam sertifitseeritud Androidi seadmetes.</string>
     <string name="dialog_more_info">Üksikasjad</string>
     <string name="solution">Lahendus</string>
 </resources>
