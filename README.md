@@ -64,7 +64,7 @@ Download these files into a folder:
 - [adb.exe](https://github.com/K3V1991/ADB-and-FastbootPlusPlus/blob/main/adb.exe?raw=true)
 - [APK_Installer.bat](https://github.com/woheller69/FreeDroidWarn/blob/master/APK_Installer.bat?raw=true)
 
-#### Download ADB for PC (Ubuntu / Debian)
+#### Download ADB for PC (Ubuntu-Debian)
 
 Install ADB using the package manager:
 
@@ -90,7 +90,7 @@ sudo usermod -aG plugdev $USER
 
 Log out and back in for the group change to take effect.
 
-#### Download ADB for PC (Arch Linux / Manjaro)
+#### Download ADB for PC (Arch Linux-Manjaro)
 
 Install ADB using pacman:
 
