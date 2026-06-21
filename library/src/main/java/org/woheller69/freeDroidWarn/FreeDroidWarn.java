@@ -3,7 +3,6 @@ package org.woheller69.freeDroidWarn;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -61,19 +60,7 @@ public class FreeDroidWarn {
         }
 
         SharedPreferences prefManager = getPrefs(context);
-        int versionCode = prefManager.getInt(KEY_VERSION, 0);
-
-        // DATA MIGRATION: Check legacy SharedPreferences from the OG version.
-        // This ensures existing users who already clicked "OK" don't see the warning again.
-        if (versionCode == 0) {
-            @SuppressWarnings("deprecation")
-            SharedPreferences legacyPrefs = android.preference.PreferenceManager.getDefaultSharedPreferences(context);
-            if (legacyPrefs.contains(KEY_VERSION)) {
-                versionCode = legacyPrefs.getInt(KEY_VERSION, 0);
-                // Migrate the value to the new private preference file
-                prefManager.edit().putInt(KEY_VERSION, versionCode).apply();
-            }
-        }
+        int versionCode = getStoredVersion(context, prefManager);
 
         if (buildVersion > versionCode) {
             MaterialAlertDialogBuilder materialAlertDialogBuilder = new MaterialAlertDialogBuilder(context);
@@ -83,11 +70,8 @@ public class FreeDroidWarn {
                 safeStartActivity(context, "https://keepandroidopen.org");
             });
             
-            materialAlertDialogBuilder.setPositiveButton(context.getString(android.R.string.ok), (dialog, which) -> {
-                SharedPreferences.Editor editor = prefManager.edit();
-                editor.putInt(KEY_VERSION, buildVersion);
-                editor.apply();
-            });
+            materialAlertDialogBuilder.setPositiveButton(context.getString(android.R.string.ok), (dialog, which) ->
+                    prefManager.edit().putInt(KEY_VERSION, buildVersion).apply());
 
             materialAlertDialogBuilder.setNeutralButton(context.getString(R.string.solution), (dialog, which) -> {
                 safeStartActivity(context, "https://github.com/woheller69/FreeDroidWarn?tab=readme-ov-file#solutions");
@@ -97,7 +81,7 @@ public class FreeDroidWarn {
             alertDialog.show();
 
             // Highlight the solution button using theme-aware colorError
-            Button neutralButton = alertDialog.getButton(DialogInterface.BUTTON_NEUTRAL);
+            Button neutralButton = alertDialog.getButton(AlertDialog.BUTTON_NEUTRAL);
             if (neutralButton != null) {
                 TypedValue tv = new TypedValue();
                 if (context.getTheme().resolveAttribute(com.google.android.material.R.attr.colorError, tv, true)) {
@@ -137,9 +121,7 @@ public class FreeDroidWarn {
 
             snackbar.setAction(R.string.dialog_more_info, v -> {
                 safeStartActivity(context, "https://keepandroidopen.org");
-                SharedPreferences.Editor editor = prefManager.edit();
-                editor.putInt(KEY_VERSION, buildVersion);
-                editor.apply();
+                prefManager.edit().putInt(KEY_VERSION, buildVersion).apply();
             });
 
             // Save the version on timeout or swipe-dismiss too, so the snackbar
