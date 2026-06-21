@@ -99,7 +99,7 @@ public class FreeDroidWarn {
      */
     public static void showWarningSnackBarOnUpgrade(Context context, View view, int buildVersion) {
         SharedPreferences prefManager = getPrefs(context);
-        int versionCode = prefManager.getInt(KEY_VERSION, 0);
+        int versionCode = getStoredVersion(context, prefManager);
 
         if (buildVersion > versionCode) {
             Snackbar snackbar = Snackbar.make(view, R.string.dialog_Warning, 8000);
@@ -136,7 +136,19 @@ public class FreeDroidWarn {
     private static SharedPreferences getPrefs(Context context) {
         return context.getSharedPreferences(context.getPackageName() + PREF_NAME, Context.MODE_PRIVATE);
     }
-
++
+    private static int getStoredVersion(Context context, SharedPreferences prefManager) {
+        int versionCode = prefManager.getInt(KEY_VERSION, 0);
+        if (versionCode == 0) {
+            `@SuppressWarnings`("deprecation")
+             SharedPreferences legacyPrefs = android.preference.PreferenceManager.getDefaultSharedPreferences(context);
+             if (legacyPrefs.contains(KEY_VERSION)) {
+                 versionCode = legacyPrefs.getInt(KEY_VERSION, 0);
+                 prefManager.edit().putInt(KEY_VERSION, versionCode).apply();             }
+         }
+        return versionCode;
+     }
+    
     /**
      * Safely starts an ACTION_VIEW intent, handling ActivityNotFoundException
      * @param context The context to start the activity from
