@@ -188,4 +188,4 @@ public class FreeDroidWarn {
             // Silently fail to avoid crashing the app
         }
     }
-                                                                      }
+}
