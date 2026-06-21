@@ -24,9 +24,8 @@ public class FreeDroidWarn {
 
     /**
      * Shows a warning dialog when the application is upgraded to a new build version.
-     * This method is provided for backward compatibility with earlier versions of the library.
      *
-     * @param context the activity context
+     * @param context the application context
      * @param buildVersion the new build version code
      */
     public static void showWarningOnUpgrade(Context context, int buildVersion) {
@@ -36,18 +35,16 @@ public class FreeDroidWarn {
     /**
      * Shows a warning dialog if the app has been upgraded since the last acknowledgment.
      *
-     * Validates that the context is an Activity in a valid lifecycle state. Compares the
-     * buildVersion with the last acknowledged version stored in app-scoped preferences,
-     * performing a one-time migration from legacy default preferences if needed. If an
-     * upgrade is detected, displays a Material alert dialog with "more info" and "solution"
-     * buttons that launch their respective URLs, and an "OK" button that acknowledges the
-     * warning. The solution button text is styled using the theme's colorError attribute,
-     * with a fallback to holo_red_dark if the attribute cannot be resolved.
+     * Validates that the context is an Activity in a valid lifecycle state. If an upgrade is
+     * detected, displays a Material alert dialog with three buttons: "more info" (opens a URL),
+     * "OK" (acknowledges the upgrade), and "solution" (opens another URL). The solution button
+     * is styled using the theme's colorError attribute, or holo_red_dark if the attribute
+     * cannot be resolved.
      *
      * @param context     an Activity context; the method returns immediately if the context
      *                    is not an Activity or if the Activity is finishing or destroyed
      * @param buildVersion the current app build version to compare against the last
-     *                    acknowledged version
+     *                     acknowledged version
      */
     public static void showWarningDialogOnUpgrade(Context context, int buildVersion) {
         // Guard against non-Activity contexts or Activities in terminal lifecycle states
@@ -174,9 +171,8 @@ public class FreeDroidWarn {
     }
     
     /**
-     * Opens the specified URL in an external activity.
+     * Launches an external activity to view the specified URL.
      *
-     * @param context the context to start the activity from
      * @param url the URL to open
      */
     private static void safeStartActivity(Context context, String url) {
