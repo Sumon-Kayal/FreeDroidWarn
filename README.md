@@ -133,7 +133,7 @@ You will also need the APK file to install to your phone, e.g. from [F-Droid](ht
 - Select desired APK from list and install.
 - If prompted, check confirmation box on phone and agree to USB debugging from this PC.
 
-**Ubuntu/Debian & Arch Linux / Manjaro:**
+**Ubuntu/Debian & Arch Linux/Manjaro:**
 - Connect your phone to the PC via a USB cable and set USB mode to file transfer.
 - Open a terminal and run:
 
