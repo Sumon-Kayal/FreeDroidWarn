@@ -17,16 +17,18 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@3df4ab11eba7bda6032a0b82a6bb43b11571feac # v4.0.0
+        with:
+          persist-credentials: false
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@b36b23c9d30fb406e8989edf4799f9ef4f3ca449 # v4.0.0
         with:
           distribution: 'temurin'
           java-version: '17'
 
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@v3
+        uses: github/codeql-action/init@4fa2a795b3401d4b112187a41aa7e09b30cba22d # v3.25.11
         with:
           languages: java-kotlin
           build-mode: manual
@@ -37,6 +39,7 @@ jobs:
           ./gradlew build --no-daemon -x test -x lint
 
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v3
+        uses: github/codeql-action/analyze@4fa2a795b3401d4b112187a41aa7e09b30cba22d # v3.25.11
         with:
           category: "/language:java-kotlin"
+          
