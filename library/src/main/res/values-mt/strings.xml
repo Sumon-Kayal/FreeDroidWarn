@@ -1,5 +1,5 @@
 <resources>
-    <string name="dialog_Warning">Google ħabbret li, mill-2026/2027, l-applikazzjonijiet kollha fuq apparat Android iċċertifikat se jeħtieġu li l-iżviluppaturi jissottomettu d-dettalji tal-identità personali tagħhom direttament lil Google. Peress li l-iżviluppaturi ta' din l-applikazzjoni ma jaqblux ma' dan ir-rekwiżit, din l-applikazzjoni ma tibqax taħdem fuq apparat Android iċċertifikat wara dak iż-żmien.</string>
+    <string name="dialog_Warning">Google ħabbret li, mill-2026/2027, l-applikazzjonijiet kollha fuq apparat Android iċċertifikat se jeħtieġu li l-iżviluppaturi jissottomettu d-dettalji tal-identità personali tagħhom direttament lil Google. Peress li l-iżviluppaturi ta\' din l-applikazzjoni ma jaqblux ma\' dan ir-rekwiżit, din l-applikazzjoni ma tibqax taħdem fuq apparat Android iċċertifikat wara dak iż-żmien.</string>
     <string name="dialog_more_info">Dettalji</string>
     <string name="solution">Soluzzjoni</string>
 </resources>
