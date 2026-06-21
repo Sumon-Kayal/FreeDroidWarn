@@ -35,16 +35,17 @@ public class FreeDroidWarn {
     /**
      * Shows a warning dialog if the app has been upgraded since the last acknowledgment.
      *
-     * Validates that the context is an Activity in a valid lifecycle state. If an upgrade is
-     * detected, displays a Material alert dialog with three buttons: "more info" (opens a URL),
-     * "OK" (acknowledges the upgrade), and "solution" (opens another URL). The solution button
-     * is styled using the theme's colorError attribute, or holo_red_dark if the attribute
-     * cannot be resolved.
+     * If the provided build version is greater than the last acknowledged version, displays
+     * a Material alert dialog with options to view more information, acknowledge the upgrade,
+     * or view a solution. The solution button is styled using the theme's colorError attribute
+     * (or holo_red_dark if unavailable). Acknowledging the upgrade persists the build version
+     * to shared preferences.
      *
-     * @param context     an Activity context; the method returns immediately if the context
-     *                    is not an Activity or if the Activity is finishing or destroyed
-     * @param buildVersion the current app build version to compare against the last
-     *                     acknowledged version
+     * Does nothing if the context is not an Activity or if the Activity is in a terminal
+     * lifecycle state (finishing or destroyed).
+     *
+     * @param context     an Activity context
+     * @param buildVersion the current app build version
      */
     public static void showWarningDialogOnUpgrade(Context context, int buildVersion) {
         // Guard against non-Activity contexts or Activities in terminal lifecycle states
@@ -125,7 +126,7 @@ public class FreeDroidWarn {
             // doesn't reappear every launch for users who saw it but didn't tap the action.
             snackbar.addCallback(new Snackbar.Callback() {
                 /**
-                 * Writes the build version to preferences when the snackbar is dismissed without tapping the action button.
+                 * Persists the build version when the snackbar is dismissed by any means other than the action button.
                  */
                 @Override
                 public void onDismissed(Snackbar snackbar, int event) {
@@ -140,10 +141,10 @@ public class FreeDroidWarn {
     }
 
     /**
-     * Retrieves the app's dedicated SharedPreferences file for storing the warning state.
+     * Obtains the application's private SharedPreferences instance.
      *
      * @param  context the application context
-     * @return         the app's private SharedPreferences instance
+     * @return         the application's private SharedPreferences instance
      */
     private static SharedPreferences getPrefs(Context context) {
         return context.getSharedPreferences(context.getPackageName() + PREF_NAME, Context.MODE_PRIVATE);
@@ -171,7 +172,7 @@ public class FreeDroidWarn {
     }
     
     /**
-     * Launches an external activity to view the specified URL.
+     * Safely opens the specified URL in an external application, suppressing errors if no handler is available.
      *
      * @param url the URL to open
      */
