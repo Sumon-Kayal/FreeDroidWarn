@@ -8,11 +8,13 @@ android {
 
     defaultConfig {
         minSdk 21
-        targetSdk 35
+        // Removed targetSdk 35 as it is often redundant in library modules
+        // but can be kept if specifically required by your project.
         versionCode 17
         versionName "1.7"
+        consumerProguardFiles "proguard-rules.pro" // Important for libraries
     }
-    
+
     buildTypes {
         release {
             minifyEnabled false
@@ -24,9 +26,4 @@ android {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
     }
-}
-
-dependencies {
-    implementation 'androidx.appcompat:appcompat:1.7.0'
-    implementation 'com.google.android.material:material:1.12.0'
 }
