@@ -24,15 +24,31 @@ public class FreeDroidWarn {
     private static final String KEY_VERSION = "versionCodeWarn";
 
     /**
-     * Legacy Method Shim: EXACT signature as the original (OG) code.
-     * This prevents breaking apps already using the old version of the library.
+     * Shows a warning dialog when the application is upgraded to a new build version.
+     * This method is provided for backward compatibility with earlier versions of the library.
+     *
+     * @param context the activity context
+     * @param buildVersion the new build version code
      */
     public static void showWarningOnUpgrade(Context context, int buildVersion) {
         showWarningDialogOnUpgrade(context, buildVersion);
     }
 
     /**
-     * Modern Material Dialog implementation
+     * Shows a warning dialog if the app has been upgraded since the last acknowledgment.
+     *
+     * Validates that the context is an Activity in a valid lifecycle state. Compares the
+     * buildVersion with the last acknowledged version stored in app-scoped preferences,
+     * performing a one-time migration from legacy default preferences if needed. If an
+     * upgrade is detected, displays a Material alert dialog with "more info" and "solution"
+     * buttons that launch their respective URLs, and an "OK" button that acknowledges the
+     * warning. The solution button text is styled using the theme's colorError attribute,
+     * with a fallback to holo_red_dark if the attribute cannot be resolved.
+     *
+     * @param context     an Activity context; the method returns immediately if the context
+     *                    is not an Activity or if the Activity is finishing or destroyed
+     * @param buildVersion the current app build version to compare against the last
+     *                    acknowledged version
      */
     public static void showWarningDialogOnUpgrade(Context context, int buildVersion) {
         // Guard against non-Activity contexts or Activities in terminal lifecycle states
@@ -95,7 +111,15 @@ public class FreeDroidWarn {
     }
 
     /**
-     * New Feature: Implementation of a SnackBar warning for a non-intrusive UI
+     * Shows a warning snackbar if the build version exceeds the stored version.
+     *
+     * <p>The snackbar displays for 8 seconds and includes a "more info" action that opens a reference
+     * URL and persists the build version to preferences. The build version is also persisted when the
+     * snackbar is dismissed by timeout or swipe, ensuring it does not reappear on subsequent launches.
+     *
+     * @param context     the application context
+     * @param view        the view to anchor the snackbar to
+     * @param buildVersion the current build version to compare against the stored version
      */
     public static void showWarningSnackBarOnUpgrade(Context context, View view, int buildVersion) {
         SharedPreferences prefManager = getPrefs(context);
@@ -121,6 +145,9 @@ public class FreeDroidWarn {
             // Save the version on timeout or swipe-dismiss too, so the snackbar
             // doesn't reappear every launch for users who saw it but didn't tap the action.
             snackbar.addCallback(new Snackbar.Callback() {
+                /**
+                 * Writes the build version to preferences when the snackbar is dismissed without tapping the action button.
+                 */
                 @Override
                 public void onDismissed(Snackbar snackbar, int event) {
                     if (event != DISMISS_EVENT_ACTION) {
@@ -133,11 +160,25 @@ public class FreeDroidWarn {
         }
     }
 
+    /**
+     * Retrieves the app's dedicated SharedPreferences file for storing the warning state.
+     *
+     * @param  context the application context
+     * @return         the app's private SharedPreferences instance
+     */
     private static SharedPreferences getPrefs(Context context) {
         return context.getSharedPreferences(context.getPackageName() + PREF_NAME, Context.MODE_PRIVATE);
     }
 +
-    private static int getStoredVersion(Context context, SharedPreferences prefManager) {
+    /**
+      * Retrieves the stored version code from preferences, migrating from deprecated storage if necessary.
+      *
+      * On first retrieval (when the stored value is zero), this method checks the legacy default
+      * preferences for a previously stored version code and copies it to the current preferences.
+      *
+      * @return the stored version code, or zero if none has been recorded
+      */
+     private static int getStoredVersion(Context context, SharedPreferences prefManager) {
         int versionCode = prefManager.getInt(KEY_VERSION, 0);
         if (versionCode == 0) {
             `@SuppressWarnings`("deprecation")
@@ -150,9 +191,10 @@ public class FreeDroidWarn {
      }
     
     /**
-     * Safely starts an ACTION_VIEW intent, handling ActivityNotFoundException
-     * @param context The context to start the activity from
-     * @param url The URL to open
+     * Opens the specified URL in an external activity.
+     *
+     * @param context the context to start the activity from
+     * @param url the URL to open
      */
     private static void safeStartActivity(Context context, String url) {
         try {
