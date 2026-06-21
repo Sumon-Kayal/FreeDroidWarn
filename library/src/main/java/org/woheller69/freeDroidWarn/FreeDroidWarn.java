@@ -147,7 +147,7 @@ public class FreeDroidWarn {
      * @return         the application's private SharedPreferences instance
      */
     private static SharedPreferences getPrefs(Context context) {
-        return context.getSharedPreferences(context.getPackageName() + PREF_NAME, Context.MODE_PRIVATE);
+        return context.getSharedPreferences(context.getPackageName() + "." + PREF_NAME, Context.MODE_PRIVATE);
     }
 
     /**
@@ -156,6 +156,8 @@ public class FreeDroidWarn {
       * On first retrieval (when the stored value is zero), this method checks the legacy default
       * preferences for a previously stored version code and copies it to the current preferences.
       *
+      * @param context     the application context, used to access legacy default preferences
+      * @param prefManager the current SharedPreferences instance to read from and migrate into
       * @return the stored version code, or zero if none has been recorded
       */
     private static int getStoredVersion(Context context, SharedPreferences prefManager) {
@@ -186,4 +188,4 @@ public class FreeDroidWarn {
             // Silently fail to avoid crashing the app
         }
     }
-}
+                                                                      }
