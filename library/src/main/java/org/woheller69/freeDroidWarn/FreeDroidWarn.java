@@ -169,7 +169,7 @@ public class FreeDroidWarn {
     private static SharedPreferences getPrefs(Context context) {
         return context.getSharedPreferences(context.getPackageName() + PREF_NAME, Context.MODE_PRIVATE);
     }
-+
+
     /**
       * Retrieves the stored version code from preferences, migrating from deprecated storage if necessary.
       *
@@ -178,17 +178,18 @@ public class FreeDroidWarn {
       *
       * @return the stored version code, or zero if none has been recorded
       */
-     private static int getStoredVersion(Context context, SharedPreferences prefManager) {
+    private static int getStoredVersion(Context context, SharedPreferences prefManager) {
         int versionCode = prefManager.getInt(KEY_VERSION, 0);
         if (versionCode == 0) {
-            `@SuppressWarnings`("deprecation")
-             SharedPreferences legacyPrefs = android.preference.PreferenceManager.getDefaultSharedPreferences(context);
-             if (legacyPrefs.contains(KEY_VERSION)) {
-                 versionCode = legacyPrefs.getInt(KEY_VERSION, 0);
-                 prefManager.edit().putInt(KEY_VERSION, versionCode).apply();             }
-         }
+            @SuppressWarnings("deprecation")
+            SharedPreferences legacyPrefs = android.preference.PreferenceManager.getDefaultSharedPreferences(context);
+            if (legacyPrefs.contains(KEY_VERSION)) {
+                versionCode = legacyPrefs.getInt(KEY_VERSION, 0);
+                prefManager.edit().putInt(KEY_VERSION, versionCode).apply();
+            }
+        }
         return versionCode;
-     }
+    }
     
     /**
      * Opens the specified URL in an external activity.
