@@ -1,5 +1,6 @@
 package org.woheller69.freeDroidWarn;
 
+import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -34,6 +35,15 @@ public class FreeDroidWarn {
      * Modern Material Dialog implementation
      */
     public static void showWarningDialogOnUpgrade(Context context, int buildVersion) {
+        // Guard against non-Activity contexts or Activities in terminal lifecycle states
+        if (!(context instanceof Activity)) {
+            return;
+        }
+        Activity activity = (Activity) context;
+        if (activity.isFinishing() || activity.isDestroyed()) {
+            return;
+        }
+
         SharedPreferences prefManager = getPrefs(context);
         int versionCode = prefManager.getInt(KEY_VERSION, 0);
 
