@@ -24,7 +24,7 @@ jobs:
         with:
           persist-credentials: false
 
-      # AGP 9.1.1 requires JDK 17+.
+      # AGP 8.7.3 requires JDK 17+.
       # Temurin 17 is the OpenJDK distribution used by the Android team
       # in their own CI and is the recommended choice for FOSS projects.
       - name: Set up JDK 17 (Temurin)
