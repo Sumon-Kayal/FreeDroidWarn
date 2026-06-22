@@ -20,7 +20,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v5
         with:
           persist-credentials: false
 
@@ -28,7 +28,7 @@ jobs:
       # Temurin 17 is the OpenJDK distribution used by the Android team
       # in their own CI and is the recommended choice for FOSS projects.
       - name: Set up JDK 17 (Temurin)
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@ad2b38190b15e4d6bdf0c97fb4fca8412226d287 # v5
         with:
           java-version: '17'
           distribution: 'temurin'
@@ -44,7 +44,7 @@ jobs:
         run: ./gradlew :library:assembleRelease --no-daemon --stacktrace
 
       - name: Upload AAR artifact
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v5
         with:
           name: freeDroidWarn-release-aar
           path: library/build/outputs/aar/*.aar
