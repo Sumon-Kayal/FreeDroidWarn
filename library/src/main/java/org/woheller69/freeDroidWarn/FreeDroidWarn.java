@@ -1,5 +1,6 @@
 package org.woheller69.freeDroidWarn;
 
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -21,6 +22,15 @@ import com.google.android.material.snackbar.Snackbar;
 
 public class FreeDroidWarn {
 
+    // Starts an Activity defensively: no browser app (ActivityNotFoundException)
+    // or an MDM/work-profile restriction (SecurityException) must not crash the host app.
+    private static void safeStartActivity(Context context, Intent intent) {
+        try {
+            context.startActivity(intent);
+        } catch (ActivityNotFoundException | SecurityException ignored) {
+        }
+    }
+
     public static void showWarningDialogOnUpgrade(Context context, int buildVersion){
         // Load the preferences
         SharedPreferences prefManager = PreferenceManager.getDefaultSharedPreferences(context);
@@ -30,8 +40,13 @@ public class FreeDroidWarn {
         if (buildVersion > versionCode){
             MaterialAlertDialogBuilder materialAlertDialogBuilder = new MaterialAlertDialogBuilder(context);
             materialAlertDialogBuilder.setMessage(R.string.dialog_Warning);
-            // Show a button for more details
-            materialAlertDialogBuilder.setNegativeButton(context.getString(R.string.dialog_more_info), (dialog, which) -> context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://keepandroidopen.org"))));
+            // Show a button for more details => If pressed update the stored version
+            materialAlertDialogBuilder.setNegativeButton(context.getString(R.string.dialog_more_info), (dialog, which) -> {
+                safeStartActivity(context, new Intent(Intent.ACTION_VIEW, Uri.parse("https://keepandroidopen.org")));
+                SharedPreferences.Editor editor = prefManager.edit();
+                editor.putInt("versionCodeWarn", buildVersion);
+                editor.apply();
+            });
             // Show a button closing the dialog => If pressed update the stored version
             materialAlertDialogBuilder.setPositiveButton(context.getString(android.R.string.ok), (dialog, which) -> {
                 SharedPreferences.Editor editor = prefManager.edit();
@@ -39,8 +54,13 @@ public class FreeDroidWarn {
                 editor.apply();
             });
 
-            // Show a button for possible solutions
-            materialAlertDialogBuilder.setNeutralButton(context.getString(R.string.solution), (dialog, which) -> context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/woheller69/FreeDroidWarn?tab=readme-ov-file#solutions"))));
+            // Show a button for possible solutions => If pressed update the stored version
+            materialAlertDialogBuilder.setNeutralButton(context.getString(R.string.solution), (dialog, which) -> {
+                safeStartActivity(context, new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/woheller69/FreeDroidWarn?tab=readme-ov-file#solutions")));
+                SharedPreferences.Editor editor = prefManager.edit();
+                editor.putInt("versionCodeWarn", buildVersion);
+                editor.apply();
+            });
 
             // Display the dialog
             AlertDialog alertDialog = materialAlertDialogBuilder.create();
@@ -67,7 +87,7 @@ public class FreeDroidWarn {
         int versionCode = prefManager.getInt("versionCodeWarn",0);
 
         // If the current version of the app is newer then the stored value show the SnackBar
-        if (buildVersion > versionCode){
+        if (buildVersion > versionCode && view.isAttachedToWindow()){
             // Create the SnackBar
             Snackbar snackbar = Snackbar.make(view, R.string.dialog_Warning, Snackbar.LENGTH_INDEFINITE);
             View snackbarView = snackbar.getView();
@@ -79,7 +99,7 @@ public class FreeDroidWarn {
 
             // Show a button for more details => If pressed update the stored version
             snackbar.setAction(R.string.dialog_more_info, v -> {
-                context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://keepandroidopen.org")));
+                safeStartActivity(context, new Intent(Intent.ACTION_VIEW, Uri.parse("https://keepandroidopen.org")));
                 SharedPreferences.Editor editor = prefManager.edit();
                 editor.putInt("versionCodeWarn", buildVersion);
                 editor.apply();
