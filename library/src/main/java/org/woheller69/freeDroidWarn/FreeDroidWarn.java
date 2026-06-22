@@ -23,30 +23,19 @@ import com.google.android.material.snackbar.Snackbar;
 public class FreeDroidWarn {
 
     // Starts an Activity defensively: no browser app (ActivityNotFoundException)
-    /**
-     * Attempts to start an activity with the given intent, silently suppressing any exceptions.
-     *
-     * @param context the context used to start the activity
-     * @param intent  the intent to start
-     */
+    // or an MDM/work-profile restriction (SecurityException) must not crash the host app.
     private static void safeStartActivity(Context context, Intent intent) {
+        // A non-Activity context (Application/Service) needs FLAG_ACTIVITY_NEW_TASK,
+        // otherwise startActivity() throws AndroidRuntimeException before try/catch helps.
+        if (!(context instanceof android.app.Activity)) {
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        }
         try {
             context.startActivity(intent);
         } catch (ActivityNotFoundException | SecurityException ignored) {
         }
     }
 
-    /**
-     * Shows an upgrade warning dialog if the app has been upgraded since the warning was last shown.
-     *
-     * Compares the provided build version against the stored version in shared preferences. If the
-     * provided version is greater, displays a dialog with options to view more information or solutions.
-     * Dismissing the dialog via any action updates the stored version to prevent the warning from
-     * appearing again until the next upgrade.
-     *
-     * @param context the application context
-     * @param buildVersion the current app build version
-     */
     public static void showWarningDialogOnUpgrade(Context context, int buildVersion){
         // Load the preferences
         SharedPreferences prefManager = PreferenceManager.getDefaultSharedPreferences(context);
@@ -80,7 +69,13 @@ public class FreeDroidWarn {
 
             // Display the dialog
             AlertDialog alertDialog = materialAlertDialogBuilder.create();
-            alertDialog.show();
+            try {
+                alertDialog.show();
+            } catch (android.view.WindowManager.BadTokenException ignored) {
+                // No valid window to attach to - e.g. a non-Activity context, or the
+                // Activity already finished/was destroyed before the dialog could show.
+                return;
+            }
 
             // Highlight the solution button
             Button neutralButton = alertDialog.getButton(DialogInterface.BUTTON_NEUTRAL);
@@ -97,15 +92,6 @@ public class FreeDroidWarn {
 
     }
 
-    /**
-     * Shows an upgrade warning snackbar if the current version is newer than the last shown warning.
-     *
-     * The snackbar is only displayed if the provided view is attached to the window. The warning
-     * includes an action button that opens additional information and updates the stored warning version.
-     *
-     * @param view the view to anchor the snackbar to
-     * @param buildVersion the current application version code
-     */
     public static void showWarningSnackBarOnUpgrade(Context context, View view, int buildVersion){
         // Load the preferences
         SharedPreferences prefManager = PreferenceManager.getDefaultSharedPreferences(context);
