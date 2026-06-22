@@ -1,4 +1,1 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- The 'package' attribute is removed to follow AGP 9.1+ requirements.
-         The namespace is declared in library/build.gradle instead. -->
-</manifest>
+<manifest package="org.woheller69.freeDroidWarn"/>
