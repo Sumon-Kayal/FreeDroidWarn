@@ -23,7 +23,12 @@ import com.google.android.material.snackbar.Snackbar;
 public class FreeDroidWarn {
 
     // Starts an Activity defensively: no browser app (ActivityNotFoundException)
-    // or an MDM/work-profile restriction (SecurityException) must not crash the host app.
+    /**
+     * Attempts to start an activity with the given intent, silently suppressing any exceptions.
+     *
+     * @param context the context used to start the activity
+     * @param intent  the intent to start
+     */
     private static void safeStartActivity(Context context, Intent intent) {
         try {
             context.startActivity(intent);
@@ -31,6 +36,17 @@ public class FreeDroidWarn {
         }
     }
 
+    /**
+     * Shows an upgrade warning dialog if the app has been upgraded since the warning was last shown.
+     *
+     * Compares the provided build version against the stored version in shared preferences. If the
+     * provided version is greater, displays a dialog with options to view more information or solutions.
+     * Dismissing the dialog via any action updates the stored version to prevent the warning from
+     * appearing again until the next upgrade.
+     *
+     * @param context the application context
+     * @param buildVersion the current app build version
+     */
     public static void showWarningDialogOnUpgrade(Context context, int buildVersion){
         // Load the preferences
         SharedPreferences prefManager = PreferenceManager.getDefaultSharedPreferences(context);
@@ -81,6 +97,15 @@ public class FreeDroidWarn {
 
     }
 
+    /**
+     * Shows an upgrade warning snackbar if the current version is newer than the last shown warning.
+     *
+     * The snackbar is only displayed if the provided view is attached to the window. The warning
+     * includes an action button that opens additional information and updates the stored warning version.
+     *
+     * @param view the view to anchor the snackbar to
+     * @param buildVersion the current application version code
+     */
     public static void showWarningSnackBarOnUpgrade(Context context, View view, int buildVersion){
         // Load the preferences
         SharedPreferences prefManager = PreferenceManager.getDefaultSharedPreferences(context);
