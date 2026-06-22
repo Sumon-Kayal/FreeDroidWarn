@@ -1,12 +1,14 @@
 package org.woheller69.freeDroidWarn;
 
-import android.app.Activity;
-import android.content.ActivityNotFoundException;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.preference.PreferenceManager;
 import android.util.TypedValue;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -19,123 +21,75 @@ import com.google.android.material.snackbar.Snackbar;
 
 public class FreeDroidWarn {
 
-    private static final String PREF_NAME = "dedicated_preferences";
-    private static final String KEY_VERSION = "versionCodeWarn";
+    public static void showWarningDialogOnUpgrade(Context context, int buildVersion){
+        // Load the preferences
+        SharedPreferences prefManager = PreferenceManager.getDefaultSharedPreferences(context);
+        int versionCode = prefManager.getInt("versionCodeWarn",0);
 
-    public static void showWarningOnUpgrade(Context context, int buildVersion) {
-        showWarningDialogOnUpgrade(context, buildVersion);
-    }
-
-    public static void showWarningDialogOnUpgrade(Context context, int buildVersion) {
-        if (!isValidActivityContext(context)) return;
-
-        SharedPreferences prefManager = getPrefs(context);
-        int versionCode = getStoredVersion(context, prefManager);
-
-        if (buildVersion > versionCode) {
+        // If the current version of the app is newer then the stored value show the dialog
+        if (buildVersion > versionCode){
             MaterialAlertDialogBuilder materialAlertDialogBuilder = new MaterialAlertDialogBuilder(context);
             materialAlertDialogBuilder.setMessage(R.string.dialog_Warning);
-            materialAlertDialogBuilder.setCancelable(false);
-
-            materialAlertDialogBuilder.setPositiveButton(android.R.string.ok, (dialog, which) -> 
-                    markAsAcknowledged(prefManager, buildVersion));
-
-            materialAlertDialogBuilder.setNeutralButton(R.string.dialog_more_info, (dialog, which) -> {
-                markAsAcknowledged(prefManager, buildVersion);
-                safeStartActivity(context, "https://keepandroidopen.org");
+            // Show a button for more details
+            materialAlertDialogBuilder.setNegativeButton(context.getString(R.string.dialog_more_info), (dialog, which) -> context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://keepandroidopen.org"))));
+            // Show a button closing the dialog => If pressed update the stored version
+            materialAlertDialogBuilder.setPositiveButton(context.getString(android.R.string.ok), (dialog, which) -> {
+                SharedPreferences.Editor editor = prefManager.edit();
+                editor.putInt("versionCodeWarn", buildVersion);
+                editor.apply();
             });
 
-            materialAlertDialogBuilder.setNegativeButton(R.string.solution, (dialog, which) -> {
-                markAsAcknowledged(prefManager, buildVersion);
-                safeStartActivity(context, "https://github.com/woheller69/FreeDroidWarn?tab=readme-ov-file#solutions");
-            });
+            // Show a button for possible solutions
+            materialAlertDialogBuilder.setNeutralButton(context.getString(R.string.solution), (dialog, which) -> context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/woheller69/FreeDroidWarn?tab=readme-ov-file#solutions"))));
 
+            // Display the dialog
             AlertDialog alertDialog = materialAlertDialogBuilder.create();
             alertDialog.show();
 
-            Button negativeButton = alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE);
-            if (negativeButton != null) {
+            // Highlight the solution button
+            Button neutralButton = alertDialog.getButton(DialogInterface.BUTTON_NEUTRAL);
+            if (neutralButton != null) {
                 TypedValue tv = new TypedValue();
-                int color = context.getTheme().resolveAttribute(com.google.android.material.R.attr.colorError, tv, true) 
-                            ? (tv.resourceId != 0 ? ContextCompat.getColor(context, tv.resourceId) : tv.data)
-                            : ContextCompat.getColor(context, android.R.color.holo_red_dark);
-                negativeButton.setTextColor(color);
+                context.getTheme().resolveAttribute(com.google.android.material.R.attr.colorErrorContainer, tv, true);
+                int color = tv.resourceId != 0
+                        ? ContextCompat.getColor(context, tv.resourceId)
+                        : tv.data;
+
+                neutralButton.setTextColor(color);
             }
         }
+
     }
 
-    public static void showWarningSnackBarOnUpgrade(Context context, View view, int buildVersion) {
-        if (!isValidActivityContext(context)) return;
+    public static void showWarningSnackBarOnUpgrade(Context context, View view, int buildVersion){
+        // Load the preferences
+        SharedPreferences prefManager = PreferenceManager.getDefaultSharedPreferences(context);
+        int versionCode = prefManager.getInt("versionCodeWarn",0);
 
-        SharedPreferences prefManager = getPrefs(context);
-        int versionCode = getStoredVersion(context, prefManager);
-
-        if (buildVersion > versionCode) {
-            Snackbar snackbar = Snackbar.make(view, R.string.dialog_Warning, 8000);
+        // If the current version of the app is newer then the stored value show the SnackBar
+        if (buildVersion > versionCode){
+            // Create the SnackBar
+            Snackbar snackbar = Snackbar.make(view, R.string.dialog_Warning, Snackbar.LENGTH_INDEFINITE);
             View snackbarView = snackbar.getView();
 
+            // Configure the TextView
             TextView textView = snackbarView.findViewById(com.google.android.material.R.id.snackbar_text);
-            if (textView != null) {
-                textView.setMaxLines(10); 
-                textView.setSingleLine(false);
-            }
+            textView.setMaxLines(Integer.MAX_VALUE);
+            textView.setSingleLine(false);
 
+            // Show a button for more details => If pressed update the stored version
             snackbar.setAction(R.string.dialog_more_info, v -> {
-                markAsAcknowledged(prefManager, buildVersion);
-                safeStartActivity(context, "https://keepandroidopen.org");
+                context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://keepandroidopen.org")));
+                SharedPreferences.Editor editor = prefManager.edit();
+                editor.putInt("versionCodeWarn", buildVersion);
+                editor.apply();
             });
 
-            snackbar.addCallback(new Snackbar.Callback() {
-                @Override
-                public void onDismissed(Snackbar snackbar, int event) {
-                    if (event != DISMISS_EVENT_ACTION) {
-                        markAsAcknowledged(prefManager, buildVersion);
-                    }
-                }
-            });
-
+            // Display the SnackBar for 5 seconds
+            snackbar.setDuration(5000);
             snackbar.show();
         }
+
     }
 
-    private static boolean isValidActivityContext(Context context) {
-        if (!(context instanceof Activity)) return false;
-        Activity activity = (Activity) context;
-        return !activity.isFinishing() && !activity.isDestroyed();
-    }
-
-    private static void markAsAcknowledged(SharedPreferences prefs, int version) {
-        prefs.edit().putInt(KEY_VERSION, version).apply();
-    }
-
-    private static SharedPreferences getPrefs(Context context) {
-        return context.getSharedPreferences(context.getPackageName() + "." + PREF_NAME, Context.MODE_PRIVATE);
-    }
-
-    private static int getStoredVersion(Context context, SharedPreferences prefManager) {
-        int versionCode = prefManager.getInt(KEY_VERSION, 0);
-        if (versionCode == 0) {
-            @SuppressWarnings("deprecation")
-            SharedPreferences legacyPrefs = android.preference.PreferenceManager.getDefaultSharedPreferences(context);
-            if (legacyPrefs.contains(KEY_VERSION)) {
-                versionCode = legacyPrefs.getInt(KEY_VERSION, 0);
-                if (versionCode != 0) {
-                    markAsAcknowledged(prefManager, versionCode);
-                }
-            }
-        }
-        return versionCode;
-    }
-    
-    private static void safeStartActivity(Context context, String url) {
-        try {
-            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-            if (!(context instanceof Activity)) {
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            }
-            context.startActivity(intent);
-        } catch (ActivityNotFoundException | SecurityException e) {
-            // Log or handle error
-        }
-    }
 }
