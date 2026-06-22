@@ -1,4 +1,4 @@
-# ..github/workflows/coderabbit.yml
+# .github/workflows/coderabbit.yml
 language: "en-US"
 
 reviews:
